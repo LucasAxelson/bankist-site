@@ -9,6 +9,9 @@ const modal = document.querySelector('.modal');
 const overlay = document.querySelector('.overlay');
 const btnCloseModal = document.querySelector('.btn--close-modal');
 const btnsOpenModal = document.querySelectorAll('.btn--show-modal');
+const tabs = document.querySelectorAll(`.operations__tab`)
+const tabsContainer = document.querySelectorAll(`.operations__tab-container`)
+const tabsContent = document.querySelectorAll(`.operations__content`)
 
 const openModal = function (e) {
   e.preventDefault()
@@ -83,11 +86,7 @@ document.querySelector(`.nav__links`).addEventListener
     }
   })
 
-// Tabbed components
-
-const tabs = document.querySelectorAll(`.operations__tab`)
-const tabsContainer = document.querySelectorAll(`.operations__tab-container`)
-const tabsContent = document.querySelectorAll(`.operations__content`)
+// Tab Transition ===============================
 
 tabsContainer.addEventListener(`click`, (e) => {
   const clicked = e.target.closest(`.operations__tab`)
