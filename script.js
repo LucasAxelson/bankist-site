@@ -3,6 +3,8 @@
 ///////////////////////////////////////
 // Modal window
 
+const header = document.querySelector(`.header`)
+const nav = document.querySelector(`.nav`)
 const modal = document.querySelector('.modal');
 const overlay = document.querySelector('.overlay');
 const btnCloseModal = document.querySelector('.btn--close-modal');
@@ -31,12 +33,14 @@ document.addEventListener('keydown', function (e) {
   }
 });
 
+///////////////////////////////////////
+// Cookie Message
+
 // Creating Cookie Message 
 const message = document.createElement(`div`)
-message.classList.add(`cookie`)
+message.classList.add(`cookie-message`)
 message.innerHTML = 'We use your cookies for improved functionality and analytics. <button class="btn btn--close-cookie">Got it!</button>'
 
-header.prepend(message)
 header.after(message)
 
 // Removing Cookie Message
@@ -47,14 +51,34 @@ document.querySelector(`.btn--close-cookie`)
 
 // Cookie Message - Styles
 message.style.backgroundColor = `#37383d`
-message.style.width = `120%`
-message.style.height = Number.parseFloat(message.getComputedStyle(message).height, 10) + 40 + `px`
+message.style.height = Number.parseFloat(getComputedStyle(message).height, 10) + 40 + `px`
 
 // Alters all buttons over to an Orange Red --Example
 // document.documentElement.style.setProperty(`--color-primary`, `orangered`) 
 
-const logo = document.querySelector(`nav__logo`)
+///////////////////////////////////////
+// Scrolling
 
-// Data attributes
+const btnScrollTo = document.querySelector(`.btn--scroll-to`)
+const section1 = document.querySelector(`#section--1`)
 
-const logo = document.querySelector(`nav__logo`)
+// Smooth Scrolling ===============================
+
+btnScrollTo.addEventListener(`click`, function (e) {
+  const s1coords = section1.getBoundingClientRect()
+  section1.scrollIntoView({ behavior: `smooth` })
+})
+
+///////////////////////////////////////
+// Page Navigation
+
+document.querySelectorAll(`.nav__link`).forEach(function (el) {
+  el.addEventListener(`click`, function (e) {
+    e.preventDefault()
+    const id = this.getAttribute(`href`)
+    console.log(id)
+    document.querySelector(id).scrollIntoView({
+      behavior: 'smooth'
+    })
+  })
+})
