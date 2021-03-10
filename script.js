@@ -106,7 +106,7 @@ nav.addEventListener(`mouseout`, function (e) {
 ///////////////////////////////////////
 // Intersection Observer API ===============================
 
-// Navbar becomes sticky as client reaches section 1
+// Navbar becomes sticky as client reaches section 1  =====
 const navHeight = nav.getBoundingClientRect().height
 
 const stickyNav = (entries) => {
@@ -126,7 +126,8 @@ const headerObserver = new IntersectionObserver
 
 headerObserver.observe(header)
 
-// Reveal sections upon focusing (scrolling down)
+// Reveal sections upon focusing (scrolling down)  =========
+
 const allSections = document.querySelectorAll(`.section`)
 
 const revealSection = function (entries, observer) {
@@ -149,7 +150,8 @@ allSections.forEach(function (section) {
   section.classList.add(`section--hidden`)
 })
 
-// Lazy-loading images
+// Lazy-loading images  ===============================
+
 const imgTargets = document.querySelectorAll(`img[data-src]`)
 
 const loadImg = function (entries, observer) {
@@ -157,7 +159,7 @@ const loadImg = function (entries, observer) {
 
   if (!entry.isIntersecting) return
 
-  //Replace src with data-src
+  // Replace src with data-src
   entry.target.src = entry.target.dataset.src
 
   entry.target.addEventListener(`load`, () => {
@@ -174,3 +176,34 @@ const imgObserver = new IntersectionObserver(loadImg, {
 })
 
 imgTargets.forEach(img => imgObserver.observe(img))
+
+// Testimonial Slider  ===============================
+
+const slides = document.querySelectorAll(`.slide`)
+const btnLeft = document.querySelectorAll(`.slider__btn--left`)
+const btnRight = document.querySelectorAll(`.slider__btn--right`)
+
+let curSlide = 0
+const maxSlide = slides.length
+
+const slider = document.querySelectorAll(`.slider`)
+slider.style.transform = `scale(0.5) translateX(-800px)`
+slider.style.overflow = `visible`
+
+const goToSlide = (slide) {
+  slides.forEach((s, i) => s.style.transform =
+    `translateX(${100 * (i - slide)}%)`)
+  // 0%, 100%, 200%, 300%
+}
+
+// Next slide
+const nextSlide = () => {
+  btnRight.addEventListener(`click`, () => {
+    if (curSlide === maxSlide - 1) curSlide = 0
+    else curSlide++
+  })
+  goToSlide(curSlide)
+}
+
+// Previous slide
+btnLeft.addEventListener(`click`, () => { })
