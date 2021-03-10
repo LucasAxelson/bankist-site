@@ -37,29 +37,6 @@ document.addEventListener('keydown', function (e) {
 });
 
 ///////////////////////////////////////
-// Cookie Message
-
-// Creating Cookie Message 
-const message = document.createElement(`div`)
-message.classList.add(`cookie-message`)
-message.innerHTML = 'We use your cookies for improved functionality and analytics. <button class="btn btn--close-cookie">Got it!</button>'
-
-header.after(message)
-
-// Removing Cookie Message
-document.querySelector(`.btn--close-cookie`)
-  .addEventListener(`click`, function () {
-    message.remove()
-  })
-
-// Cookie Message - Styles
-message.style.backgroundColor = `#37383d`
-message.style.height = Number.parseFloat(getComputedStyle(message).height, 10) + 40 + `px`
-
-// Alters all buttons over to an Orange Red --Example
-// document.documentElement.style.setProperty(`--color-primary`, `orangered`) 
-
-///////////////////////////////////////
 // Page Navigation
 
 const btnScrollTo = document.querySelector(`.btn--scroll-to`)
@@ -126,12 +103,13 @@ nav.addEventListener(`mouseout`, function (e) {
   handleHover(e, 1)
 })
 
-// Sticky Navigation ===============================
+///////////////////////////////////////
+// Intersection Observer API ===============================
 
-const header = document.querySelector(`.header`)
+// Navbar becomes sticky as client reaches section 1
 const navHeight = nav.getBoundingClientRect().height
 
-const stickyNav = (entries) {
+const stickyNav = (entries) => {
   const [entry] = entries
 
   if (!entry.isIntersecting) {
@@ -147,3 +125,52 @@ const headerObserver = new IntersectionObserver
   })
 
 headerObserver.observe(header)
+
+// Reveal sections upon focusing (scrolling down)
+const allSections = document.querySelectorAll(`.section`)
+
+const revealSection = function (entries, observer) {
+  const [entry] = entries
+
+  if (!entry.isIntersecting) return
+
+  entry.target.classList.remove(`section--hidden`)
+  observer.unobserve(entry.target)
+}
+
+const sectionObserver = new IntersectionObserver
+  (revealSection, {
+    root: null,
+    threshold: 0.15,
+  })
+
+allSections.forEach(function (section) {
+  sectionObserver.observe(section)
+  section.classList.add(`section--hidden`)
+})
+
+// Lazy-loading images
+const imgTargets = document.querySelectorAll(`img[data-src]`)
+
+const loadImg = function (entries, observer) {
+  const [entry] = entries
+
+  if (!entry.isIntersecting) return
+
+  //Replace src with data-src
+  entry.target.src = entry.target.dataset.src
+
+  entry.target.addEventListener(`load`, () => {
+    entry.target.classList.remove(`lazy-img`)
+  })
+
+  observer.unobserve(entry.target)
+}
+
+const imgObserver = new IntersectionObserver(loadImg, {
+  root: null,
+  threshold: 0,
+  rootMargin: `50px`,
+})
+
+imgTargets.forEach(img => imgObserver.observe(img))
