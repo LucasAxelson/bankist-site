@@ -5,13 +5,15 @@
 
 const header = document.querySelector(`.header`)
 const nav = document.querySelector(`.nav`)
+const modal = document.querySelector('.modal')
+const overlay = document.querySelector('.overlay')
+const btnScrollTo = document.querySelector(`.btn--scroll-to`)
+const section1 = document.querySelector(`#section--1`)
+const btnCloseModal = document.querySelector('.btn--close-modal')
+const btnsOpenModal = document.querySelectorAll('.btn--show-modal')
 const tabs = document.querySelectorAll(`.operations__tab`)
 const tabsContainer = document.querySelector(`.operations__tab-container`)
 const tabsContent = document.querySelectorAll(`.operations__content`)
-const modal = document.querySelector('.modal');
-const overlay = document.querySelector('.overlay');
-const btnCloseModal = document.querySelector('.btn--close-modal');
-const btnsOpenModal = document.querySelectorAll('.btn--show-modal');
 
 const openModal = function (e) {
   e.preventDefault()
@@ -38,10 +40,6 @@ document.addEventListener('keydown', function (e) {
 
 ///////////////////////////////////////
 // Page Navigation
-
-const btnScrollTo = document.querySelector(`.btn--scroll-to`)
-const section1 = document.querySelector(`#section--1`)
-
 // Smooth Scrolling ===============================
 
 btnScrollTo.addEventListener(`click`, function (e) {
@@ -67,17 +65,20 @@ document.querySelector(`.nav__links`).addEventListener
 
 tabsContainer.addEventListener(`click`, (e) => {
   const clicked = e.target.closest(`.operations__tab`)
+
   if (!clicked) return // Guard clause
 
   // Remove Tab 
-  tabsContainer.forEach(t => t.classList.remove(`.operations__tab--active`))
-  tabsContent.forEach(c => c.classList.remove(`operations__contant--active`))
+  tabs.forEach(t => t.classList.remove(`operations__tab--active`))
+  tabsContent.forEach(c => c.classList.remove(`operations__content--active`))
 
   // Activate Tab
-  clicked.classList.add(`.operations__tab--active`)
+  clicked.classList.add(`operations__tab--active`)
+
+  // Activate content area
   document
     .querySelector(`.operations__content--${clicked.dataset.tab}`)
-    .classList.add(`.operations__content--active`)
+    .classList.add('operations__content--active');
 })
 
 // Menu Fade Animation ===============================
@@ -178,32 +179,87 @@ const imgObserver = new IntersectionObserver(loadImg, {
 imgTargets.forEach(img => imgObserver.observe(img))
 
 // Testimonial Slider  ===============================
+const slider = () => {
+  const slides = document.querySelectorAll(`.slide`)
+  const btnLeft = document.querySelector(`.slider__btn--left`)
+  const btnRight = document.querySelector(`.slider__btn--right`)
+  const dotContainer = document.querySelector(`.dots`)
 
-const slides = document.querySelectorAll(`.slide`)
-const btnLeft = document.querySelectorAll(`.slider__btn--left`)
-const btnRight = document.querySelectorAll(`.slider__btn--right`)
+  let curSlide = 0
+  const maxSlide = slides.length
 
-let curSlide = 0
-const maxSlide = slides.length
+  // Functions
+  const createDots = () => {
+    slides.forEach((_, i) => {
+      dotContainer.insertAdjacentHTML(
+        `beforeend`,
+        `<button class="dots__dot" data-slide="${i}"></button>`
+      )
+    })
+  }
 
-const slider = document.querySelectorAll(`.slider`)
-slider.style.transform = `scale(0.5) translateX(-800px)`
-slider.style.overflow = `visible`
+  const activateDot = (slide) => {
+    document
+      .querySelectorAll(`.dots__dot`)
+      .forEach(dot => {
+        dot.classList.remove(`dots__dot--active`)
+      })
 
-const goToSlide = (slide) {
-  slides.forEach((s, i) => s.style.transform =
-    `translateX(${100 * (i - slide)}%)`)
-  // 0%, 100%, 200%, 300%
-}
+    document
+      .querySelector(`.dots__dot[data-slide="${slide}"]`)
+      .classList.add(`dots__dot--active`)
+  }
 
-// Next slide
-const nextSlide = () => {
-  btnRight.addEventListener(`click`, () => {
+  const goToSlide = (slide) => {
+    slides.forEach((s, i) => s.style.transform =
+      `translateX(${100 * (i - slide)}%)`)
+    // 0%, 100%, 200%, 300%
+  }
+
+  // Next slide
+  const nextSlide = () => {
     if (curSlide === maxSlide - 1) curSlide = 0
     else curSlide++
+
+    goToSlide(curSlide)
+    activateDot(curSlide)
+  }
+
+  // Previous slide
+  const prevSlide = () => {
+    if (curSlide === 0) curSlide = maxSlide - 1
+    else curSlide--
+
+    goToSlide(curSlide)
+    activateDot(curSlide)
+  }
+
+  const init = function () {
+    goToSlide(0)
+    createDots()
+    activateDot(0)
+  }
+
+  init()
+
+  // Event handlers
+  btnRight.addEventListener(`click`, nextSlide)
+  btnLeft.addEventListener(`click`, prevSlide)
+
+  // Listen for Keyboard Events
+  document.addEventListener(`keydown`, (e) => {
+    if (e.key === `ArrowLeft`) prevSlide()
+    e.key === `ArrowRight` && nextSlide()
   })
-  goToSlide(curSlide)
+
+  dotContainer.addEventListener(`click`, (e) => {
+    if (e.target.classList.contains(`.dots__dot`)) {
+      const { slide } = e.target.dataset
+
+      goToSlide(slide)
+      activateDot(slide)
+    }
+  })
 }
 
-// Previous slide
-btnLeft.addEventListener(`click`, () => { })
+slider()
